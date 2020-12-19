@@ -1,0 +1,14 @@
+{
+    "name": "patrixsmart/adjustfly",
+    "description": "Records Laravel model adjustments during update.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Patrick Duruamadi",
+            "email": "patrickadvance@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
