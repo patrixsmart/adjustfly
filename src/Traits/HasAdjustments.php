@@ -19,7 +19,7 @@ trait HasAdjustments
      */
     public function adjustedProperties()
     {
-        $user_id = auth()->id;
+        $user_id = auth()->id();
 
         $before = json_encode(
             array_intersect_key(
