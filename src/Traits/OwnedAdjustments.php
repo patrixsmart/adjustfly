@@ -4,7 +4,7 @@ namespace Patrixsmart\Adjustfly\Traits;
 
 use Patrixsmart\Adjustfly\Models\Adjustment;
 
-trait HasAdjustments
+trait OwnedAdjustments
 {
     /**
      *
