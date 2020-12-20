@@ -15,18 +15,7 @@ class AdjustmentController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return Adjustment::all()->paginate(50);
     }
 
     /**
@@ -37,29 +26,6 @@ class AdjustmentController extends Controller
      */
     public function show(Adjustment $adjustment)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Adjustment  $adjustment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Adjustment $adjustment)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Adjustment  $adjustment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Adjustment $adjustment)
-    {
-        //
+        return $adjustment;
     }
 }

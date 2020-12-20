@@ -18,6 +18,13 @@ class Adjustment extends Model
     protected $guarded = [];
 
     /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with = ['adjustable'];
+
+    /**
     * Get the parent adjustable model.
     */
     public function adjustable()
