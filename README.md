@@ -92,4 +92,4 @@ If you discover a security vulnerability within Adjustfly, please send an e-mail
 
 ## License
 
-PatriXsmarT Skyriver is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+PatriXsmarT Adjustfly is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
