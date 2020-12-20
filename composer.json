@@ -1,6 +1,6 @@
 {
     "name": "patrixsmart/adjustfly",
-    "description": "Records Laravel model adjustments during update.",
+    "description": "Record Laravel model adjustments during updating event.",
     "type": "library",
     "license": "MIT",
     "authors": [
