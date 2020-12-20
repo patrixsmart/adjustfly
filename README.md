@@ -17,6 +17,12 @@ You will need to publish the config file for you to update it details:
 ```sh
 php artisan vendor:publish --tag="adjustfly-config"
 ```
+### Migrate 
+
+You will need to migrate the adjustments table exposed by Adjustfly:
+```sh
+php artisan migrate
+```
 
 ###  Adjustfly routes
 Adjustfly exposes this routes to your application using the following route. 
@@ -86,7 +92,7 @@ We would appreciate your sponsorship for the development of Adjustfly. If you ar
 
 Thank you for considering contributing to the PatriXsmart Adjustfly!.
 
-## Security Vulnerabilities
+## Security Vulnerabilities 
 
 If you discover a security vulnerability within Adjustfly, please send an e-mail to PatriXsmarT LLC. via [package@patrixsmart.com](mailto:package@patrixsmart.com). All security vulnerabilities will be promptly addressed.
 
