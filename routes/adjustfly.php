@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 */
+
 Route::group([
     'namespace' => 'Patrixsmart\Adjustfly\Http\Controllers',
-    'prefix' => 'api'
+    'middleware' => 'web'
 ], function () {
-    Route::apiResource('adjustments','AdjustmentController')->only(['index','show']);
+    Route::apiResource('adjustments', 'AdjustmentController')->only(['index', 'show']);
 });
-

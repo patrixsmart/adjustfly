@@ -15,7 +15,7 @@ class AdjustmentController extends Controller
      */
     public function index()
     {
-        return Adjustment::paginate(50);
+        return Adjustment::paginate(20);
     }
 
     /**
@@ -26,6 +26,6 @@ class AdjustmentController extends Controller
      */
     public function show(Adjustment $adjustment)
     {
-        return $adjustment;
+        return $adjustment->load('adjustable');
     }
 }

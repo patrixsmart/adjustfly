@@ -7,7 +7,7 @@ use Patrixsmart\Adjustfly\Models\Adjustment;
 trait HasAdjustments
 {
     /**
-     *
+     * Saves the model adjustments made to the database.
      */
     public function recordAdjustment()
     {
@@ -15,7 +15,7 @@ trait HasAdjustments
     }
 
     /**
-     *
+     * Get all the model fields old and new values adjusted by the user
      */
     public function adjustedProperties()
     {
@@ -30,14 +30,14 @@ trait HasAdjustments
 
         $after = json_encode($this->getDirty());
 
-        return compact('before','after','user_id');
+        return compact('before', 'after', 'user_id');
     }
 
     /**
-     *
+     * Shows all adjustments made in the model
      */
     public function adjustments()
     {
-        return $this->morphMany(Adjustment::class,'adjustable');
+        return $this->morphMany(Adjustment::class, 'adjustable')->paginate('20');
     }
 }

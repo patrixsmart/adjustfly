@@ -7,7 +7,7 @@ use Patrixsmart\Adjustfly\Models\Adjustment;
 trait OwnedAdjustments
 {
     /**
-     *
+     * These displays all model adjustments made by the user
      */
     public function ownedAdjustments()
     {

@@ -48,8 +48,14 @@ Adjustfly exposes this routes to your application using the following route.
         Route::apiResource('adjustments','AdjustmentController')->only(['index','show']);
     });
 
-    // http://yourdomain.com/api/adjustments to get all adjustments with pagination
-    // http://yourdomain.com/api/adjustments/{adjustment_id} to see details of an adjustment made
+    /**
+     * http://yourdomain.com/adjustments to get all adjustments with pagination
+     */
+
+    /**
+     * http://yourdomain.com/adjustments/{adjustment_id} to see details of an adjustment made with
+     * the current state of the adjustable model.
+     */
 ```
 
 ## Adjustfly Usage
@@ -70,7 +76,7 @@ class ModelClass extends Model
 }
 ```
 
-and uses this trait in your User model see adjustments made by a particular user.
+and use this trait in your User model tosee adjustments made by a particular user.
 
 ```php
 
