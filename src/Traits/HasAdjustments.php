@@ -38,6 +38,22 @@ trait HasAdjustments
      */
     public function adjustments()
     {
-        return $this->morphMany(Adjustment::class, 'adjustable')->paginate('20');
+        return $this->morphMany(Adjustment::class, 'adjustable');
+    }
+
+    /**
+     * Shows all adjustments made in the model with pagination.
+     */
+    public function paginatedAdjustments($numberOfItems = 20)
+    {
+        return $this->adjustments()->paginate($numberOfItems);
+    }
+
+    /**
+     * Shows all adjustments made in the model with simple pagination.
+     */
+    public function simplePaginatedAdjustments($numberOfItems = 20)
+    {
+        return $this->adjustments()->simplePaginate($numberOfItems);
     }
 }
