@@ -15,13 +15,13 @@ class AdjustmentController extends Controller
      */
     public function index()
     {
-        return Adjustment::all()->paginate(50);
+        return Adjustment::paginate(50);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Adjustment  $adjustment
+     * @param  \Patrixsmart\Adjustfly\Models\Adjustment  $adjustment
      * @return \Illuminate\Http\Response
      */
     public function show(Adjustment $adjustment)

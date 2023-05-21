@@ -14,7 +14,8 @@ class AdjustflyServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/adjustfly.php', 'adjustfly'
+            __DIR__ . '/../config/adjustfly.php',
+            'adjustfly'
         );
     }
 
@@ -26,12 +27,11 @@ class AdjustflyServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/adjustfly.php' => config_path('adjustfly.php')
-        ],'adjustfly-config');
+            __DIR__ . '/../config/adjustfly.php' => config_path('adjustfly.php')
+        ], 'adjustfly-config');
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-        $this->loadRoutesFrom(__DIR__.'/../routes/adjustfly.php');
-
+        $this->loadRoutesFrom(__DIR__ . '/../routes/adjustfly.php');
     }
 }
