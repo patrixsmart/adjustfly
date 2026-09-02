@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Patrixsmart\Adjustfly\Traits;
+namespace Patrixsmart\Adjustfly\Concerns;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;

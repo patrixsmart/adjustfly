@@ -10,23 +10,26 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create($this->table(), function (Blueprint $table) {
+        $userKey = config('adjustfly.user.foreign_key', 'user_id');
+        $usersTable = $this->usersTable();
+
+        Schema::create('adjustments', function (Blueprint $table) use ($userKey, $usersTable) {
             $table->id();
 
-            match (config('adjustfly.morph_key_type', 'id')) {
-                'uuid' => $table->uuidMorphs('adjustable'),
-                'ulid' => $table->ulidMorphs('adjustable'),
-                default => $table->morphs('adjustable'),
-            };
+            // The models you track. If they use UUID or ULID keys, swap this for
+            // $table->uuidMorphs('adjustable') or $table->ulidMorphs('adjustable').
+            $table->morphs('adjustable');
 
-            $userKey = config('adjustfly.user.foreign_key', 'user_id');
-
-            match (config('adjustfly.user.key_type', 'id')) {
-                'uuid' => $table->uuid($userKey)->nullable(),
-                'ulid' => $table->ulid($userKey)->nullable(),
-                'string' => $table->string($userKey)->nullable(),
-                default => $table->unsignedBigInteger($userKey)->nullable(),
-            };
+            // The user credited with the adjustment. Deleting a user keeps the
+            // audit row and nulls the actor.
+            //
+            // foreignId() is an unsigned big integer. If your users table has a
+            // UUID or ULID key, replace it with foreignUuid() or foreignUlid() —
+            // the rest of the chain stays the same.
+            $table->foreignId($userKey)
+                ->nullable()
+                ->constrained($usersTable)
+                ->nullOnDelete();
 
             $table->string('event')->nullable();
             $table->json('before')->nullable();
@@ -36,6 +39,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            // MySQL indexes foreign key columns automatically; PostgreSQL and
+            // SQLite do not, so declare it explicitly.
             $table->index($userKey);
             $table->index('created_at');
         });
@@ -43,11 +48,19 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists($this->table());
+        Schema::dropIfExists('adjustments');
     }
 
-    private function table(): string
+    /**
+     * The table the credited users live in, taken from the configured user
+     * model rather than assumed to be "users".
+     */
+    private function usersTable(): string
     {
-        return config('adjustfly.table', 'adjustments');
+        $model = config('adjustfly.user.model')
+            ?? config('auth.providers.users.model')
+            ?? 'App\Models\User';
+
+        return class_exists($model) ? (new $model)->getTable() : 'users';
     }
 };

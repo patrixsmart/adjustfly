@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Patrixsmart\Adjustfly\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
-use Patrixsmart\Adjustfly\Traits\HasAdjustments;
+use Patrixsmart\Adjustfly\Concerns\HasAdjustments;
 
 class Post extends Model
 {

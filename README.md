@@ -10,21 +10,22 @@ Supports **Laravel 12 and 13**. Laravel 12 needs PHP 8.2+; Laravel 13 needs PHP 
 composer require patrixsmart/adjustfly
 ```
 
-Publish the config file and run the migration:
+Publish the config and the migration, then migrate:
 
 ```sh
 php artisan vendor:publish --tag="adjustfly-config"
+php artisan vendor:publish --tag="adjustfly-migrations"
 php artisan migrate
 ```
 
-If you need to customise the schema, publish the migration too:
+The migration is **not** run from the package — publishing is required. The
+schema then lives in your own repository, where it shows up in code review, can
+be edited before it is ever run, and is never changed underneath you by a
+`composer update`.
 
-```sh
-php artisan vendor:publish --tag="adjustfly-migrations"
-```
-
-> **Publish the config *before* migrating.** The migration reads `morph_key_type`
-> and `user.key_type` to pick the right column types for UUID/ULID models.
+Open the published migration before migrating if your models use UUID or ULID
+keys; it ships with `morphs()` and an integer `user_id`, and carries comments
+showing the alternatives.
 
 ## Usage
 
@@ -35,7 +36,7 @@ automatically on every update.
 
 ```php
 use Illuminate\Database\Eloquent\Model;
-use Patrixsmart\Adjustfly\Traits\HasAdjustments;
+use Patrixsmart\Adjustfly\Concerns\HasAdjustments;
 
 class Student extends Model
 {
@@ -109,7 +110,7 @@ Student::withoutAdjustments(function () {
 
 ```php
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Patrixsmart\Adjustfly\Traits\OwnedAdjustments;
+use Patrixsmart\Adjustfly\Concerns\OwnedAdjustments;
 
 class User extends Authenticatable
 {
@@ -157,15 +158,35 @@ Event::listen(function (AdjustmentRecorded $event) {
 
 ### Pruning
 
-Adjustments grow quickly. `prune_after_days` (default 365) plugs into
-Laravel's scheduler:
+Adjustments grow quickly. `adjustfly:prune` deletes anything older than
+`prune_after_days` (default 365):
+
+```sh
+php artisan adjustfly:prune
+
+php artisan adjustfly:prune --pretend      # report, delete nothing
+php artisan adjustfly:prune --days=90      # override the configured window
+php artisan adjustfly:prune --chunk=500    # smaller batches on big tables
+```
+
+Schedule it daily:
 
 ```php
 // bootstrap/app.php
-->withSchedule(fn ($schedule) => $schedule->command('model:prune')->daily())
+->withSchedule(fn ($schedule) => $schedule->command('adjustfly:prune')->daily())
 ```
 
-Set it to `null` to keep adjustments forever.
+Set `prune_after_days` to `null` to keep adjustments forever — the command then
+reports that pruning is disabled and exits cleanly, so it is safe to leave
+scheduled.
+
+> Use `adjustfly:prune` rather than Laravel's `model:prune`. The latter only
+> auto-discovers models in your own `app/Models` directory, so it will run
+> successfully and prune no adjustments at all. `adjustfly:prune` names the
+> configured model explicitly and then delegates to `model:prune`, so chunking,
+> the `ModelsPruned` event and soft-delete handling are unchanged. If you prefer
+> calling it directly:
+> `php artisan model:prune --model="Patrixsmart\Adjustfly\Models\Adjustment"`
 
 ## HTTP routes
 
@@ -222,26 +243,48 @@ GET /api/adjustments/{adjustment}
 | --- | --- | --- |
 | `model` | `Adjustment::class` | Swap in your own subclass |
 | `table` | `adjustments` | Table name |
-| `morph_key_type` | `id` | `id`, `uuid` or `ulid` — for tracked models |
 | `record_automatically` | `true` | Hook model events automatically |
 | `events` | `['updating']` | Events that produce an adjustment |
 | `excluded_attributes` | passwords, tokens, timestamps | Never recorded |
 | `capture_request_context` | `true` | Store IP address and user agent |
 | `user.model` / `user.guard` | auth defaults | Who is credited |
-| `user.foreign_key` / `user.key_type` | `user_id` / `id` | Column name and type |
+| `user.foreign_key` | `user_id` | User column on the adjustments table |
 | `routes.enabled` | `false` | Expose the HTTP endpoints |
-| `prune_after_days` | `365` | Retention for `model:prune` |
+| `prune_after_days` | `365` | Retention for `adjustfly:prune` |
+
+## Upgrading from 2.0
+
+2.1 carries two breaking changes despite the minor version bump — 2.0.0 had only
+just been published when they landed.
+
+- **The traits moved from `Patrixsmart\Adjustfly\Traits` to
+  `Patrixsmart\Adjustfly\Concerns`.** The old namespace is gone, so every model
+  that tracks adjustments needs its import updated:
+
+  ```diff
+  - use Patrixsmart\Adjustfly\Traits\HasAdjustments;
+  - use Patrixsmart\Adjustfly\Traits\OwnedAdjustments;
+  + use Patrixsmart\Adjustfly\Concerns\HasAdjustments;
+  + use Patrixsmart\Adjustfly\Concerns\OwnedAdjustments;
+  ```
+
+- **The migration is no longer loaded from the package.** If your table already
+  exists you are unaffected. On a fresh install you must now run
+  `php artisan vendor:publish --tag="adjustfly-migrations"` before `migrate`, or
+  you will end up with no table and no error.
+- The `morph_key_type` and `user.key_type` config keys were removed. Leaving them
+  in a published config is harmless; set column types in the published migration.
 
 ## Upgrading from 1.x
 
-2.0 is a breaking release.
+2.x is a breaking release. Everything under *Upgrading from 2.0* applies too.
 
 - **`before`/`after` are now `json` columns cast to arrays.** They were
   hand-encoded `text` before. Existing rows still decode correctly, but if you
   read them with `json_decode()` in your app, drop that call.
 - **New columns:** `event`, `ip_address`, `user_agent`, plus indexes on the
-  morph and user columns. Re-publish and re-run the migration, or write a small
-  migration of your own to add them.
+  morph and user columns. Your 1.x table predates them, so adapt the published
+  migration into an `ALTER`, or drop and recreate the table.
 - **Routes are disabled by default** and now require authorization. Previously
   they were registered on the `web` middleware with no auth at all — re-enable
   them deliberately, behind a policy.
@@ -264,4 +307,4 @@ composer test
 
 ## License
 
-MIT.
+MIT. See [LICENSE](LICENSE).

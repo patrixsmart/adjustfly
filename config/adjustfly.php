@@ -12,24 +12,14 @@ return [
     | The Eloquent model used to persist adjustments, and the table it writes
     | to. Swap the model for your own subclass if you need extra behaviour.
     |
+    | The migration is published, so if you change the table name here, rename
+    | it in your published migration too — nothing keeps the two in sync.
+    |
     */
 
     'model' => Patrixsmart\Adjustfly\Models\Adjustment::class,
 
     'table' => 'adjustments',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Morph Key Type
-    |--------------------------------------------------------------------------
-    |
-    | The key type used by the models you are tracking. Supported values are
-    | "id" (auto-incrementing), "uuid" and "ulid". This is only read by the
-    | package migration, so change it before running `php artisan migrate`.
-    |
-    */
-
-    'morph_key_type' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -85,8 +75,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | The authenticatable model credited with an adjustment, the guard used to
-    | resolve it, the foreign key column, and that column's type ("id",
-    | "uuid", "ulid" or "string").
+    | resolve it, and the foreign key column on the adjustments table. If you
+    | change the foreign key, rename the column in your published migration to
+    | match.
     |
     */
 
@@ -94,7 +85,6 @@ return [
         'model' => null, // Defaults to config('auth.providers.users.model')
         'guard' => null, // Defaults to the application's default guard
         'foreign_key' => 'user_id',
-        'key_type' => 'id',
     ],
 
     /*

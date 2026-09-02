@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Patrixsmart\Adjustfly\Tests\Fixtures;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Patrixsmart\Adjustfly\Traits\OwnedAdjustments;
+use Patrixsmart\Adjustfly\Concerns\OwnedAdjustments;
 
 class User extends Authenticatable
 {

@@ -38,8 +38,9 @@ jobs:
       - name: Install dependencies
         run: |
           composer require --no-interaction --no-update \
-            "laravel/framework:${{ matrix.laravel }}" \
-            "orchestra/testbench:${{ matrix.testbench }}" --dev
+            "laravel/framework:${{ matrix.laravel }}"
+          composer require --dev --no-interaction --no-update \
+            "orchestra/testbench:${{ matrix.testbench }}"
           composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
