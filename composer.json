@@ -1,6 +1,14 @@
 {
     "name": "patrixsmart/adjustfly",
-    "description": "Record Laravel model adjustments during updating event.",
+    "description": "Record Laravel model adjustments (audit trail) automatically on model events.",
+    "keywords": [
+        "laravel",
+        "audit",
+        "audit-trail",
+        "activity-log",
+        "eloquent",
+        "revisions"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -10,8 +18,12 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
-        "laravel/framework": "^8.0|^9.0|^10.0|^11.0"
+        "php": "^8.2",
+        "laravel/framework": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0|^11.0",
+        "phpunit/phpunit": "^11.0|^12.0"
     },
     "extra": {
         "laravel": {
@@ -23,9 +35,19 @@
     "autoload": {
         "psr-4": {
             "Patrixsmart\\Adjustfly\\": "src/",
-            "Patrixsmart\\Adjustfly\\Database\\Factories\\": "database/factories/",
-            "Patrixsmart\\Adjustfly\\Database\\Seeders\\": "database/seeders/"
+            "Patrixsmart\\Adjustfly\\Database\\Factories\\": "database/factories/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Patrixsmart\\Adjustfly\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true
