@@ -44,6 +44,14 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
         });
 
+        $schema->create('settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('module');
+            $table->string('key');
+            $table->string('value')->nullable();
+            $table->timestamps();
+        });
+
         $schema->create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name')->default('Tester');

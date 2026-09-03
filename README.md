@@ -96,6 +96,51 @@ class Student extends Model
 }
 ```
 
+### Name the record
+
+Every adjustment stores `adjustable_label` - a human name for the record it
+belongs to, captured when the row is written.
+
+```php
+$student->update(['class_id' => 4]);
+
+$student->adjustments()->first()->adjustable_label;   // "Ada Lovelace"
+```
+
+It is stored rather than resolved on read for two reasons: a name that only
+exists on the record cannot be searched for, and a hard-deleted record cannot
+be loaded back at all - so without this the trail forgets what it was about.
+
+```php
+Adjustment::query()->where('adjustable_label', 'like', "%Lovelace%")->get();
+```
+
+The first of `adjustfly.label_attributes` that holds a value wins:
+
+```php
+// config/adjustfly.php
+'label_attributes' => ['name', 'title', 'label', 'reference', 'email'],
+```
+
+When a model's identity is not in a single attribute, it can say what it is
+called itself:
+
+```php
+class Setting extends Model
+{
+    use HasAdjustments;
+
+    public function adjustmentLabel(): ?string
+    {
+        return "{$this->module} - {$this->key}";
+    }
+}
+```
+
+Returning `null` is fine - not every model has a name worth recording. Labels
+are truncated to 255 characters, so an unexpectedly long value can never fail
+the insert and lose the adjustment with it.
+
 ### Suppress recording temporarily
 
 Useful in seeders, imports and data backfills:
@@ -246,11 +291,32 @@ GET /api/adjustments/{adjustment}
 | `record_automatically` | `true` | Hook model events automatically |
 | `events` | `['updating']` | Events that produce an adjustment |
 | `excluded_attributes` | passwords, tokens, timestamps | Never recorded |
+| `label_attributes` | `name`, `title`, `label`, … | Attributes tried when naming a record |
 | `capture_request_context` | `true` | Store IP address and user agent |
 | `user.model` / `user.guard` | auth defaults | Who is credited |
 | `user.foreign_key` | `user_id` | User column on the adjustments table |
 | `routes.enabled` | `false` | Expose the HTTP endpoints |
 | `prune_after_days` | `365` | Retention for `adjustfly:prune` |
+
+## Upgrading from 2.x
+
+3.0 adds the `adjustable_label` column, and the package writes to it on every
+adjustment - so the column has to exist before you upgrade.
+
+Since 2.1 the migration lives in your application rather than the package,
+which means it will not change on its own. Add the column to your published
+migration and re-run it, or write a small migration of your own:
+
+```php
+Schema::table('adjustments', function (Blueprint $table) {
+    $table->string('adjustable_label')->nullable()->after('adjustable_id');
+});
+```
+
+Existing rows keep a null label; nothing else changes. If you would rather not
+store labels at all, set `label_attributes` to `[]` and override
+`adjustmentLabel()` to return null - the column stays empty but must still be
+present.
 
 ## Upgrading from 2.0
 

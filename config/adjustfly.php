@@ -59,6 +59,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Record Label
+    |--------------------------------------------------------------------------
+    |
+    | Each adjustment stores a human name for the record it belongs to, so a
+    | trail can be searched and read without loading every record back - and so
+    | a deleted record is still recognisable. The first of these attributes
+    | that holds a value wins; a model can override adjustmentLabel() when its
+    | identity is not in a single attribute.
+    |
+    */
+
+    'label_attributes' => [
+        'name',
+        'title',
+        'label',
+        'reference',
+        'email',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Request Context
     |--------------------------------------------------------------------------
     |

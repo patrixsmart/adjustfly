@@ -31,6 +31,12 @@ return new class extends Migration
                 ->constrained($usersTable)
                 ->nullOnDelete();
 
+            // A human name for the adjusted record, captured when the
+            // adjustment is written. Stored rather than resolved on read: a
+            // hard-deleted record cannot be loaded back, and a name that only
+            // exists on the record cannot be searched for.
+            $table->string('adjustable_label')->nullable();
+
             $table->string('event')->nullable();
             $table->json('before')->nullable();
             $table->json('after')->nullable();

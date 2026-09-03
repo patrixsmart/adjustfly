@@ -117,6 +117,46 @@ trait HasAdjustments
     }
 
     /**
+     * A human name for this record, stored on each of its adjustments.
+     *
+     * Override this when a model's identity is not in a single attribute - a
+     * settings row keyed by module and name has no "title", but
+     * "billing - currency" is what a reader needs to see:
+     *
+     *     public function adjustmentLabel(): ?string
+     *     {
+     *         return "{$this->module} - {$this->key}";
+     *     }
+     *
+     * Returning null is fine; not every model has a name worth recording.
+     *
+     * Read from getAttributes() rather than getAttribute() so a model with a
+     * relation sharing one of these names is not queried just to build a
+     * label. During an "updating" event the attributes already hold the new
+     * values, so the label describes the record as the change left it.
+     */
+    public function adjustmentLabel(): ?string
+    {
+        foreach ((array) config('adjustfly.label_attributes', ['name', 'title']) as $key) {
+            $value = $this->getAttributes()[$key] ?? null;
+
+            if (! is_scalar($value)) {
+                continue;
+            }
+
+            $value = trim((string) $value);
+
+            if ($value !== '') {
+                // The column is a plain string; a longer value would fail the
+                // insert and lose the whole adjustment over a cosmetic field.
+                return mb_substr($value, 0, 255);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Build the before/after payload for an adjustment.
      *
      * Values are read from getOriginal()/getDirty() rather than re-querying
@@ -153,6 +193,7 @@ trait HasAdjustments
 
         return array_merge([
             'event' => $event,
+            'adjustable_label' => $this->adjustmentLabel(),
             'before' => $before,
             'after' => $after,
             $this->adjustmentUserForeignKey() => $this->adjustmentUserId(),

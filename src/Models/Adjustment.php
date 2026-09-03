@@ -33,6 +33,7 @@ class Adjustment extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'adjustable_label',
         'event',
         'before',
         'after',

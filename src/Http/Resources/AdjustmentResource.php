@@ -23,6 +23,7 @@ class AdjustmentResource extends JsonResource
             'event' => $this->event,
             'adjustable_type' => $this->adjustable_type,
             'adjustable_id' => $this->adjustable_id,
+            'adjustable_label' => $this->adjustable_label,
             'changed' => $this->changedAttributes(),
             'before' => $this->before,
             'after' => $this->after,

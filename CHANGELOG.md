@@ -1,5 +1,36 @@
 # Changelog
 
+## 3.0.0
+
+> **This release requires a schema change.** The `adjustments` table needs a new
+> `adjustable_label` column before you upgrade - see *Upgrading from 2.x* in the
+> README. Since 2.1 the migration lives in your application, so it will not pick
+> the column up on its own.
+
+### Added
+- **`adjustable_label`**: every adjustment now stores a human name for the
+  record it belongs to, captured when the row is written.
+
+  It is stored rather than resolved on read because both alternatives fail in
+  practice. Resolving a name by loading each record costs a query per row and
+  returns nothing once the record is hard deleted - which is exactly when an
+  audit trail matters most. Mining it out of the before/after payload only
+  works when the name happened to be among the changed attributes. Storing it
+  also makes a trail searchable by record name, which nothing else allows.
+- `HasAdjustments::adjustmentLabel()`, overridable per model, for records whose
+  identity is not in a single attribute (a settings row keyed by module and
+  name, say). Returning null is supported.
+- `adjustfly.label_attributes` config: the attributes tried, in order, when a
+  model does not name itself. Defaults to `name`, `title`, `label`,
+  `reference`, `email`.
+- `adjustable_label` is exposed by `AdjustmentResource`.
+
+### Notes
+- Labels are truncated to 255 characters, so an unexpectedly long value cannot
+  fail the insert and lose the adjustment with it.
+- The label is read during the model event, so for an update it describes the
+  record as the change left it, not as it was before.
+
 ## 2.1.0
 
 > **This release contains breaking changes.** They would normally warrant a major
